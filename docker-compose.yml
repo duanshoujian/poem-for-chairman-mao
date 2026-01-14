@@ -13,7 +13,8 @@ services:
     ports:
       - "${MONGO_HOST_PORT}:27017"
     healthcheck:
-      test: ["CMD", "mongo", "--username", "${MONGO_INITDB_ROOT_USERNAME}", "--password", "${MONGO_INITDB_ROOT_PASSWORD}", "--eval", "db.adminCommand('ping')"]
+      # 使用 mongosh 检查（适用于 mongo:6）
+      test: ["CMD-SHELL", "mongosh --username ${MONGO_INITDB_ROOT_USERNAME} --password ${MONGO_INITDB_ROOT_PASSWORD} --authenticationDatabase admin --eval \"db.adminCommand('ping')\" || exit 1"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -24,7 +25,10 @@ services:
     environment:
       ME_CONFIG_MONGODB_ADMINUSERNAME: ${MONGO_INITDB_ROOT_USERNAME}
       ME_CONFIG_MONGODB_ADMINPASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
-      ME_CONFIG_MONGODB_SERVER: mongo
+      # 使用完整连接字符串，保证能自动连接（包含 authSource=admin）
+      ME_CONFIG_MONGODB_URL: "mongodb://${MONGO_INITDB_ROOT_USERNAME}:${MONGO_INITDB_ROOT_PASSWORD}@mongo:27017/${MONGO_INITDB_DATABASE}?authSource=admin"
+      ME_CONFIG_MONGODB_AUTH_DATABASE: admin
+      ME_CONFIG_BASICAUTH: ${ME_CONFIG_BASICAUTH:-false}
     ports:
       - "18081:8081"
     depends_on:
