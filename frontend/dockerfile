@@ -1,10 +1,20 @@
 # build
 FROM node:18-alpine AS builder
+
+# 安装 pnpm
+RUN corepack enable && corepack prepare pnpm@latest --activate
+
 WORKDIR /app
-COPY package*.json ./
-RUN npm ci
+
+# 复制依赖文件
+COPY package.json pnpm-lock.yaml* ./
+
+# 安装依赖
+RUN pnpm install --frozen-lockfile
+
+# 复制源代码并构建
 COPY . .
-RUN npm run build
+RUN pnpm run build
 
 # production image
 FROM nginx:stable-alpine
