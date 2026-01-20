@@ -39,7 +39,7 @@ export class UserController {
   }
 
   @Put(':id')
-  @ApiOperation({ summary: '更新用户' })
+  @ApiOperation({ summary: '更新用户123' })
   @ApiResponse({ status: 200, description: '用户更新成功' })
   @ApiResponse({ status: 404, description: '用户不存在' })
   update(
