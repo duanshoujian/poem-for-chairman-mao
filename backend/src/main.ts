@@ -2,6 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ConfigService } from '@nestjs/config';
+import { loggerMiddleware } from './logger';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -14,6 +15,7 @@ async function bootstrap() {
 
   // 启用 CORS（如果需要）
   app.enableCors();
+  app.use(loggerMiddleware);
 
   // Swagger 配置
   const swaggerConfig = new DocumentBuilder()
